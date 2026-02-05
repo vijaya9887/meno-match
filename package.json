@@ -1,0 +1,23 @@
+{
+  "name": "meno-match",
+  "version": "1.0.0",
+  "description": "Intelligent speaker search and matching platform",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "backend:dev": "npm run dev -w packages/backend",
+    "frontend:dev": "npm run dev -w packages/frontend",
+    "backend:build": "npm run build -w packages/backend",
+    "frontend:build": "npm run build -w packages/frontend",
+    "db:init": "npm run db:init -w packages/backend"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

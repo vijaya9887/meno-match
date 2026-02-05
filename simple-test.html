@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meno Match - Speaker Search</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        .status.loading {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .status.success {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .speakers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .speaker-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .speaker-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .speaker-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .speaker-bio {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .tag {
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+        
+        .score {
+            background: #10b981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f0f0f0;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .profile-header {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .profile-header h2 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .profile-section {
+            margin-bottom: 20px;
+        }
+        
+        .profile-section h3 {
+            color: #667eea;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .engagement-item {
+            background: #f9f9f9;
+            padding: 12px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        
+        .engagement-title {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .engagement-meta {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .health-check {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            z-index: 100;
+        }
+        
+        .health-check.connected {
+            background: #10b981;
+            color: white;
+        }
+        
+        .health-check.disconnected {
+            background: #ef4444;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="health-check" id="healthCheck">Backend: Checking...</div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎤 Meno Match</h1>
+            <p>Find the perfect speaker for your event</p>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search speakers... e.g., 'French climate experts' or 'AI specialists'"
+                    onkeypress="if(event.key==='Enter') search()"
+                >
+                <button onclick="search()" id="searchBtn">Search</button>
+            </div>
+            <div id="status"></div>
+        </div>
+        
+        <div id="resultsContainer"></div>
+    </div>
+    
+    <!-- Profile Modal -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeProfile()">&times;</button>
+            <div id="profileContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Dynamically set API URL based on current location
+        const API_URL = window.location.origin;
+        
+        console.log('API URL:', API_URL);
+        document.addEventListener('DOMContentLoaded', () => {
+            checkHealth();
+            setInterval(checkHealth, 10000);
+        });
+        
+        function checkHealth() {
+            fetch(`${API_URL}/health`)
+                .then(r => r.json())
+                .then(data => {
+                    const el = document.getElementById('healthCheck');
+                    el.textContent = '✓ Backend Connected';
+                    el.className = 'health-check connected';
+                })
+                .catch(err => {
+                    const el = document.getElementById('healthCheck');
+                    el.textContent = '✗ Backend Disconnected';
+                    el.className = 'health-check disconnected';
+                });
+        }
+        
+        function updateStatus(message, type = 'loading') {
+            const el = document.getElementById('status');
+            el.textContent = message;
+            el.className = 'status ' + type;
+        }
+        
+        async function search() {
+            const query = document.getElementById('searchInput').value.trim();
+            
+            if (!query) {
+                updateStatus('Please enter a search query', 'error');
+                return;
+            }
+            
+            updateStatus('Searching speakers...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_URL}/api/speakers/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        natural_language_query: query,
+                        limit: 10,
+                        offset: 0
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                displayResults(data, query);
+                updateStatus(`Found ${data.total} speaker(s)`, 'success');
+            } catch (error) {
+                console.error('Search error:', error);
+                updateStatus(`Error: ${error.message}. Make sure backend is running on ${API_URL}`, 'error');
+            }
+        }
+        
+        function displayResults(data, query) {
+            const container = document.getElementById('resultsContainer');
+            
+            if (data.speakers.length === 0) {
+                container.innerHTML = '<div class="no-results">No speakers found. Try a different search.</div>';
+                return;
+            }
+            
+            let html = '<div class="speakers-grid">';
+            
+            data.speakers.forEach(speaker => {
+                const score = speaker.relevance_score ? speaker.relevance_score.toFixed(1) : '0';
+                html += `
+                    <div class="speaker-card" onclick="viewProfile('${speaker.id}', '${speaker.first_name}', '${speaker.last_name}')">
+                        <div class="speaker-name">${speaker.first_name} ${speaker.last_name}</div>
+                        <div class="speaker-bio">${speaker.biography || 'No bio available'}</div>
+                        ${speaker.expertise.length > 0 ? `
+                            <div class="tags">
+                                ${speaker.expertise.slice(0, 3).map(e => `<span class="tag">${e}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        <div style="margin-top: 10px;">
+                            <div style="font-size: 0.85em; color: #666;">
+                                📍 ${speaker.geography.slice(0, 2).join(', ')}
+                            </div>
+                        </div>
+                        <div class="score">Relevance: ${score}%</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        async function viewProfile(speakerId, firstName, lastName) {
+            try {
+                const response = await fetch(`${API_URL}/api/profiles/${speakerId}`);
+                if (!response.ok) throw new Error('Failed to load profile');
+                
+                const profile = await response.json();
+                displayProfile(profile);
+                document.getElementById('profileModal').classList.add('active');
+            } catch (error) {
+                alert(`Error loading profile: ${error.message}`);
+            }
+        }
+        
+        function displayProfile(profile) {
+            const speaker = profile.speaker;
+            const engagements = profile.engagement_history || [];
+            
+            let html = `
+                <div class="profile-header">
+                    <h2>${speaker.first_name} ${speaker.last_name}</h2>
+                    <p style="color: #666; margin-top: 5px;">${speaker.biography}</p>
+                </div>
+                
+                <div class="profile-section">
+                    <h3>Expertise</h3>
+                    <div class="tags">
+                        ${speaker.expertise.map(e => `<span class="tag">${e}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <h3>Topics</h3>
+                    <div class="tags">
+                        ${speaker.topics.map(t => `<span class="tag">${t}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <h3>Geography</h3>
+                    <p>${speaker.geography.join(', ')}</p>
+                </div>
+                
+                <div class="profile-section">
+                    <h3>Languages</h3>
+                    <p>${speaker.languages.join(', ')}</p>
+                </div>
+                
+                <div class="profile-section">
+                    <h3>Audience Types</h3>
+                    <p>${speaker.audience_types.join(', ')}</p>
+                </div>
+            `;
+            
+            if (engagements.length > 0) {
+                html += `
+                    <div class="profile-section">
+                        <h3>Prior Engagements</h3>
+                        ${engagements.map(e => `
+                            <div class="engagement-item">
+                                <div class="engagement-title">${e.event_name}</div>
+                                <div class="engagement-meta">
+                                    📅 ${new Date(e.event_date).toLocaleDateString()}
+                                    ${e.audience_size ? ` | 👥 ${e.audience_size} people` : ''}
+                                    ${e.feedback_rating ? ` | ⭐ ${e.feedback_rating}/5` : ''}
+                                </div>
+                                ${e.topic ? `<div class="engagement-meta">Topic: ${e.topic}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('profileContent').innerHTML = html;
+        }
+        
+        function closeProfile() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+        
+        // Close modal on background click
+        document.getElementById('profileModal').addEventListener('click', (e) => {
+            if (e.target.id === 'profileModal') closeProfile();
+        });
+    </script>
+</body>
+</html>

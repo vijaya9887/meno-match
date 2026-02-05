@@ -1,0 +1,133 @@
+:root {
+  color-scheme: light dark;
+  color: rgba(15, 23, 42, 0.95);
+  background-color: #ffffff;
+
+  /* Professional color palette */
+  --primary: #0f72ba;
+  --primary-dark: #064fa3;
+  --primary-light: #1a90e0;
+  --secondary: #06b6d4;
+  --accent: #f59e0b;
+  --success: #10b981;
+  --error: #ef4444;
+  --neutral-50: #f9fafb;
+  --neutral-100: #f3f4f6;
+  --neutral-200: #e5e7eb;
+  --neutral-300: #d1d5db;
+  --neutral-500: #6b7280;
+  --neutral-700: #374151;
+  --neutral-900: #111827;
+
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+button {
+  border-radius: 8px;
+  border: none;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  background-color: var(--primary);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(15, 114, 186, 0.2);
+}
+
+button:hover {
+  background-color: var(--primary-dark);
+  box-shadow: 0 6px 12px rgba(15, 114, 186, 0.3);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--neutral-900);
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--neutral-900);
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+
+p {
+  margin: 0;
+  color: var(--neutral-700);
+}
+
+input, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: var(--neutral-900);
+    background-color: #ffffff;
+  }
+  a {
+    color: var(--primary);
+  }
+  a:hover {
+    color: var(--primary-dark);
+  }
+  button {
+    background-color: var(--primary);
+    color: white;
+  }
+}
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@meno-match/shared",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "typescript": "^5.3.3"
+  }
+}
